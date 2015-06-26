@@ -65,7 +65,7 @@ public class MainActivityFragment extends Fragment {
 
         //inflating listview with the adapter
         ListView listView = (ListView) rootView.findViewById(R.id.listview_artist);
-        listView.setAdapter(mArtistAdapter);
+        //listView.setAdapter(mArtistAdapter);
 
         EditText editText = (EditText) rootView.findViewById(R.id.searchArtist);
         editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
