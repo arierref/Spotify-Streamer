@@ -1,5 +1,6 @@
 package com.example.spotifystreamer.spotifystreamer;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -37,8 +39,20 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the searched artist in case of a screen rotation for example.
+        savedInstanceState.putStringArrayList("artistList", artistsResult);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        if (null != savedInstanceState) {
+            artistsResult = savedInstanceState.getStringArrayList("artistList");
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         //String[] artistArray = {
@@ -100,6 +114,17 @@ public class MainActivityFragment extends Fragment {
             }
         };
         listView.setAdapter(mArtistAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Hashtable<String, Object> selectedArtist = (Hashtable<String, Object>) mArtistAdapter.getItem(position);
+                String selectedArtistId = (String) selectedArtist.get("id");
+                Intent intent = new Intent(getActivity(), Top10TracksActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, selectedArtistId);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
