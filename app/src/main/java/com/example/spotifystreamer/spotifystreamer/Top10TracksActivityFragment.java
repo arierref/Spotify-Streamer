@@ -86,12 +86,13 @@ public class Top10TracksActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                //Hashtable<String, Object> selectedArtist = (Hashtable<String, Object>) mTop10Adapter.getItem(position);
-                //String selectedArtistId = (String) selectedArtist.get("id");
-                Toast.makeText(getActivity(), "Wait for Stage 2", Toast.LENGTH_SHORT).show();
-                //Intent intent = new Intent(getActivity(), Top10TracksActivity.class)
-                //.putExtra(Intent.EXTRA_TEXT, selectedArtistId);
-                //startActivity(intent);
+
+                //Lunch explicit intent for Now Playing carrying track ID
+                Hashtable<String, Object> selectedTrack = (Hashtable<String, Object>) mTop10Adapter.getItem(position);
+                String selectedTrackID = (String) selectedTrack.get("id");
+                Intent intent = new Intent(getActivity(), NowPlayingActivity.class)
+                            .putExtra(Intent.EXTRA_TEXT, selectedTrackID);
+                startActivity(intent);
             }
         });
 
@@ -140,6 +141,7 @@ public class Top10TracksActivityFragment extends Fragment {
                     Hashtable<String, Object> trackTable = new Hashtable<String, Object>();
                     trackTable.put("album", trackList.tracks.get(i).album.name);
                     trackTable.put("track", trackList.tracks.get(i).name);
+                    trackTable.put("id", trackList.tracks.get(i).id);
                     if (trackList.tracks.get(i).album.images.isEmpty()) {
                         trackTable.put("image", "");
                     } else {
