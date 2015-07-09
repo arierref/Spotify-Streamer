@@ -37,20 +37,21 @@
                 android:layout_alignStart="@+id/textView" />
 
             <ImageView
-                android:layout_width="320dp"
-                android:layout_height="320dp"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:id="@+id/imageView"
                 android:layout_below="@+id/textView2"
+                android:layout_above="@+id/textView20"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/no_image"/>
+                android:src="@drawable/no_image" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Track"
                 android:gravity="center"
-                android:id="@+id/textView3"
-                android:layout_below="@+id/imageView"
+                android:id="@+id/textView20"
+                android:layout_above="@+id/seekBar"
                 android:layout_alignLeft="@+id/textView"
                 android:layout_alignStart="@+id/textView" />
 
@@ -58,10 +59,29 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/seekBar"
-                android:layout_below="@+id/textView3"
+                android:layout_above="@+id/layout2"
                 android:layout_centerHorizontal="true" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"
+                android:id="@+id/textView4"
+                android:layout_below="@+id/seekBar"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:30"
+                android:id="@+id/textView5"
+                android:layout_alignTop="@+id/textView4"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
             <LinearLayout
+                android:id="@+id/layout2"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -98,24 +118,6 @@
                     android:padding="15dp"
                     android:src="@android:drawable/ic_media_next"/>
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0:00"
-                android:id="@+id/textView4"
-                android:layout_below="@+id/seekBar"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0:30"
-                android:id="@+id/textView5"
-                android:layout_alignTop="@+id/textView4"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
 
         </RelativeLayout>
     </LinearLayout>

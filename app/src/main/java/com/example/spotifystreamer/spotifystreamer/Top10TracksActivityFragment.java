@@ -89,9 +89,9 @@ public class Top10TracksActivityFragment extends Fragment {
 
                 //Lunch explicit intent for Now Playing carrying track ID
                 Hashtable<String, Object> selectedTrack = (Hashtable<String, Object>) mTop10Adapter.getItem(position);
-                String selectedTrackID = (String) selectedTrack.get("id");
+                //String selectedTrackID = (String) selectedTrack.get("href");
                 Intent intent = new Intent(getActivity(), NowPlayingActivity.class)
-                            .putExtra(Intent.EXTRA_TEXT, selectedTrackID);
+                            .putExtra(Intent.EXTRA_TEXT, mArtist);
                 startActivity(intent);
             }
         });
@@ -141,7 +141,6 @@ public class Top10TracksActivityFragment extends Fragment {
                     Hashtable<String, Object> trackTable = new Hashtable<String, Object>();
                     trackTable.put("album", trackList.tracks.get(i).album.name);
                     trackTable.put("track", trackList.tracks.get(i).name);
-                    trackTable.put("id", trackList.tracks.get(i).id);
                     if (trackList.tracks.get(i).album.images.isEmpty()) {
                         trackTable.put("image", "");
                     } else {
@@ -149,7 +148,7 @@ public class Top10TracksActivityFragment extends Fragment {
                     }
                     top10List.add(trackTable);
                 }
-                Log.e("top10List", String.valueOf(top10List));
+                //Log.e("top10List", String.valueOf(top10List));
                 return top10List;
             }
         }
