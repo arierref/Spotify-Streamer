@@ -47,7 +47,7 @@ public class NowPlayingActivityFragment extends Fragment {
 
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            mArtistId = intent.getStringExtra(Intent.EXTRA_TEXT);
+            mArtistId = (intent.getStringExtra(Intent.EXTRA_TEXT));
             //Log.e("DebugmArtist", mArtistId);
         }
         if (savedInstanceState == null) {

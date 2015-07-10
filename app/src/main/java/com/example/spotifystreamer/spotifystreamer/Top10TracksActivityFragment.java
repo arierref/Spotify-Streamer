@@ -86,12 +86,10 @@ public class Top10TracksActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
                 //Lunch explicit intent for Now Playing carrying track ID
                 Hashtable<String, Object> selectedTrack = (Hashtable<String, Object>) mTop10Adapter.getItem(position);
-                //String selectedTrackID = (String) selectedTrack.get("href");
-                Intent intent = new Intent(getActivity(), NowPlayingActivity.class)
-                            .putExtra(Intent.EXTRA_TEXT, mArtist);
+                String selectedTrackID = (String) selectedTrack.get("id");
+                Intent intent = new Intent(getActivity(), NowPlayingActivity.class).putExtra(Intent.EXTRA_TEXT, mArtist);
                 startActivity(intent);
             }
         });
