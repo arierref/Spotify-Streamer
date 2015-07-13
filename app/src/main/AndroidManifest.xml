@@ -11,30 +11,39 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.spotifystreamer.spotifystreamer.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".Top10TracksActivity"
+            android:name="com.example.spotifystreamer.spotifystreamer.Top10TracksActivity"
             android:label="@string/title_activity_top10_tracks"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="com.example.spotifystreamer.spotifystreamer.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.spotifystreamer.spotifystreamer.MainActivity" />
         </activity>
+
         <activity
-            android:name=".NowPlayingActivity"
+            android:name="com.example.spotifystreamer.spotifystreamer.NowPlayingActivity"
             android:label="@string/title_activity_now_playing"
-            android:parentActivityName=".Top10TracksActivity" >
+            android:parentActivityName="com.example.spotifystreamer.spotifystreamer.Top10TracksActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.spotifystreamer.spotifystreamer.Top10TracksActivity" />
         </activity>
-    </application>
+
+        <service
+            android:name="com.example.spotifystreamer.spotifystreamer.MediaPlayerService"
+            android:icon="@mipmap/ic_launcher"
+            android:label="MediaPlayer" >
+            <intent-filter><action android:name="PLAY"/></intent-filter>
+        </service>
+
+      </application>
 
 </manifest>

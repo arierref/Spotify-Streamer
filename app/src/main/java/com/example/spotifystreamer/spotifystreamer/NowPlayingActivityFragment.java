@@ -99,7 +99,6 @@ public class NowPlayingActivityFragment extends Fragment {
                     trackTable.put("track", trackList.tracks.get(i).name);
                     trackTable.put("id", trackList.tracks.get(i).id);
                     trackTable.put("href", trackList.tracks.get(i).href);
-                    trackTable.put("uri", trackList.tracks.get(i).uri);
                     if (trackList.tracks.get(i).album.images.isEmpty()) {
                         trackTable.put("image", "");
                     } else {

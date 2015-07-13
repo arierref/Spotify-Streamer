@@ -119,9 +119,12 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Hashtable<String, Object> selectedArtist = (Hashtable<String, Object>) mArtistAdapter.getItem(position);
+                //Log.e("Artista selecionado", String.valueOf(selectedArtist));
                 String selectedArtistId = (String) selectedArtist.get("id");
-                Intent intent = new Intent(getActivity(), Top10TracksActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, selectedArtistId);
+                String selectedArtistName = (String) selectedArtist.get("name");
+                Intent intent = new Intent(getActivity(), Top10TracksActivity.class);
+                    intent.putExtra("artistId", selectedArtistId);
+                    intent.putExtra("artist", selectedArtistName);
                 startActivity(intent);
             }
         });
