@@ -1,34 +1,26 @@
 package com.example.spotifystreamer.spotifystreamer;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
-
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Tracks;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class NowPlayingActivityFragment extends Fragment {
+public class NowPlayingActivityFragment extends Fragment implements View.OnClickListener {
 
-    private SimpleAdapter mTrackAdapter;
-    private String mArtistId;
+    //private SimpleAdapter mTrackAdapter;
+    private int mArtistSelected;
+    private int position;
     private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
-
+    private ArrayList trackToPlay;
 
     public NowPlayingActivityFragment() {
     }
@@ -36,7 +28,8 @@ public class NowPlayingActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the searched artist in case of a screen rotation for example.
-        savedInstanceState.putStringArrayList("track", tracksResult);
+        savedInstanceState.putInt("artistSelected", mArtistSelected);
+        savedInstanceState.putStringArrayList("Top10Tracks", tracksResult);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -44,82 +37,33 @@ public class NowPlayingActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_now_playing, container, false);
-
         Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            mArtistId = (intent.getStringExtra(Intent.EXTRA_TEXT));
-            //Log.e("DebugmArtist", mArtistId);
+        if (intent != null) {
+            mArtistSelected = intent.getIntExtra("artistSelected", position);
+            tracksResult = intent.getStringArrayListExtra("Top10Tracks");
         }
-        if (savedInstanceState == null) {
-            FetchTop10Task Track = new FetchTop10Task();
-            Track.execute(mArtistId);
-            //Log.e("PointOfStop", "PointOfStop");
-        } else {
-            tracksResult = savedInstanceState.getStringArrayList("track");
+        if (savedInstanceState != null) {
+            mArtistSelected = savedInstanceState.getInt("artistSelected");
+            tracksResult = savedInstanceState.getStringArrayList("Top10Tracks");
+            int positionMusic = mArtistSelected;
+            trackToPlay = tracksResult;
+            //trackProgress = savedInstanceState.getInt("Progress");
+            //seekBar.setProgress(trackProgress);
+        } else{
+            int positionMusic = mArtistSelected;
+            //trackToPlay = (Hashtable) tracksResult.get(positionMusic);
         }
+
+
+        //MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
+        //getActivity().startService(new Intent("PLAY"));
+
 
         return rootView;
     }
 
-    public class FetchTop10Task extends AsyncTask<String, Void, ArrayList> {
+    @Override
+    public void onClick(View v) {
 
-        @Override
-        protected ArrayList doInBackground(String... params) {
-
-            if (params.length == 0) {
-                return null;
-            }
-            Tracks trackList;
-            String id = params[0];
-
-            SpotifyApi api = new SpotifyApi();
-            SpotifyService spotifyService = api.getService();
-            Map map = new HashMap();
-            map.put("country", "US");
-            try {
-                trackList = spotifyService.getArtistTopTrack(id, map);
-            } catch (Exception e) {
-                return null;
-            }
-
-            return getResultFromTrackList(trackList);
-        }
-
-        //Return an array with the top10 tracks, album and imagesURL
-        private ArrayList getResultFromTrackList(Tracks trackList) {
-            int numOfTrack = trackList.tracks.size();
-
-            if(numOfTrack < 1){
-                return null;
-            } else {
-                ArrayList<Hashtable<String, Object>> top10List = new ArrayList<Hashtable<String, Object>>();
-                for (int i = 0; i < numOfTrack; i++) {
-                    Hashtable<String, Object> trackTable = new Hashtable<String, Object>();
-                    trackTable.put("album", trackList.tracks.get(i).album.name);
-                    trackTable.put("track", trackList.tracks.get(i).name);
-                    trackTable.put("id", trackList.tracks.get(i).id);
-                    trackTable.put("href", trackList.tracks.get(i).href);
-                    if (trackList.tracks.get(i).album.images.isEmpty()) {
-                        trackTable.put("image", "");
-                    } else {
-                        trackTable.put("image", trackList.tracks.get(i).album.images.get(0).url);
-                    }
-                    top10List.add(trackTable);
-                }
-                //Log.e("top10ListAgain", String.valueOf(top10List));
-                return top10List;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList resultList) {
-            if (resultList != null) {
-                tracksResult.clear();
-                tracksResult.addAll(resultList);
-                //mTop10Adapter.notifyDataSetChanged();
-            } else {
-                Toast.makeText(getActivity(), "No Track Found.Please Select Another Artist!", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 }

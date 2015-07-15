@@ -24,7 +24,6 @@ import java.util.Map;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Tracks;
-import retrofit.RetrofitError;
 
 
 /**
@@ -32,12 +31,7 @@ import retrofit.RetrofitError;
  */
 public class Top10TracksActivityFragment extends Fragment {
 
-    private static final String LOG_TAG = Top10TracksActivityFragment.class.getSimpleName();
-    private TracksAdapter mTracksAdapter;
-    //private String mArtist;
-    private ArrayList<ParcelableArray> trackArrayList;
     private int mPositionID;
-
     private SimpleAdapter mTop10Adapter;
     private String mArtist;
     private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
@@ -45,12 +39,11 @@ public class Top10TracksActivityFragment extends Fragment {
     public Top10TracksActivityFragment() {
     }
 
-    /*@Override
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the searched artist in case of a screen rotation for example.
-        savedInstanceState.putStringArrayList("trackList", tracksResult);
+        savedInstanceState.putStringArrayList("TopTenTracks", tracksResult);
         super.onSaveInstanceState(savedInstanceState);
-    }*/
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -58,25 +51,16 @@ public class Top10TracksActivityFragment extends Fragment {
 
         Bundle arguments = getArguments();
 
-        Log.e("AllArguments", String.valueOf(arguments));
         if (arguments != null) {
             mArtist = arguments.getString("artistId");
         }
 
         if (savedInstanceState != null) {
+            tracksResult = savedInstanceState.getStringArrayList("TopTenTracks");
         } else {
             FetchTop10Task FetchTop10Task = new FetchTop10Task();
             FetchTop10Task.execute(mArtist);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.e("Entidades Salvas:", String.valueOf(savedInstanceState));
-        savedInstanceState.putParcelableArrayList("TopTenTracks", trackArrayList);
-        savedInstanceState.putInt("artistId", Integer.parseInt(mArtist));
-        super.onSaveInstanceState(savedInstanceState);
-
     }
 
     @Override
@@ -91,19 +75,9 @@ public class Top10TracksActivityFragment extends Fragment {
         if (savedInstanceState == null) {
             FetchTop10Task top10Tracks = new FetchTop10Task();
             top10Tracks.execute(mArtist);
-            //Log.e("PointOfStop", "PointOfStop");
         } else {
-            tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
-            mPositionID = savedInstanceState.getInt("artistId");
+            tracksResult = savedInstanceState.getStringArrayList("TopTenTracks");
         }
-
-        //if (savedInstanceState != null) {
-            //trackArrayList = savedInstanceState.getParcelableArrayList("TopTenTracks");
-            //mPositionID = savedInstanceState.getInt("artistId");
-
-        //} else {
-            //trackArrayList = new ArrayList<ParcelableArray>();
-        //}
 
         mTop10Adapter = new SimpleAdapter(
                 getActivity(),
@@ -121,8 +95,6 @@ public class Top10TracksActivityFragment extends Fragment {
             }
         };
 
-        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_top10, trackArrayList);
-
         //inflating listview with the adapter
         ListView listView = (ListView) rootView.findViewById(R.id.listview_top10);
         listView.setAdapter(mTop10Adapter);
@@ -132,9 +104,10 @@ public class Top10TracksActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Lunch parcelable for Now Playing carrying tracks list
                 mPositionID = position;
-                ParcelableArray selectedTrack = mTracksAdapter.getItem(mPositionID);
-                ((PlayerFragment.PlayerCallback) getActivity())
-                        .onItemSelected(selectedTrack);
+                Intent intent = new Intent(getActivity(), NowPlayingActivity.class);
+                    intent.putExtra("artistSelected", mPositionID);
+                    intent.putExtra("Top10Tracks", tracksResult);
+                startActivity(intent);
             }
         });
 
@@ -143,25 +116,25 @@ public class Top10TracksActivityFragment extends Fragment {
 
     public ParcelableArray loadNext() {
         ParcelableArray selectedTrack = null;
-        if (mPositionID < mTracksAdapter.getCount() - 1) {
+        /*if (mPositionID < mTracksAdapter.getCount() - 1) {
             mPositionID = mPositionID + 1;
             selectedTrack = mTracksAdapter.getItem(mPositionID);
         }else{
             selectedTrack = mTracksAdapter.getItem(mPositionID);
             Toast.makeText(getActivity(), "No Next Track found. Click on Previous", Toast.LENGTH_LONG).show();
-        }
+        }*/
         return selectedTrack;
     }
 
     public ParcelableArray loadPrevious() {
         ParcelableArray selectedTrack = null;
-        if (mPositionID != 0) {
+        /*if (mPositionID != 0) {
             mPositionID = mPositionID - 1;
             selectedTrack = mTracksAdapter.getItem(mPositionID);
         }else{
             selectedTrack = mTracksAdapter.getItem(mPositionID);
             Toast.makeText(getActivity(), "No Previous Track found. Click on Next", Toast.LENGTH_LONG).show();
-        }
+        }*/
         return selectedTrack;
 
     }
@@ -173,34 +146,27 @@ public class Top10TracksActivityFragment extends Fragment {
 
     public class FetchTop10Task extends AsyncTask<String, Void, ArrayList> {
 
-        private RetrofitError retrofitError;
-
         @Override
         protected ArrayList doInBackground(String... params) {
-
             if (params.length == 0) {
                 return null;
             }
 
             Tracks trackList;
             String id = params[0];
-            //Log.e("idDoArtista", id);
 
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotifyService = api.getService();
             Map map = new HashMap();
             map.put("country", "US");
+
             try {
                 trackList = spotifyService.getArtistTopTrack(id, map);
-                //Log.e("trackList", String.valueOf(trackList));
-            } catch (RetrofitError e) {
-                retrofitError = e;
+            } catch (Exception e) {
                 Log.e("Exception", String.valueOf(e));
                 return null;
             }
-
             return getResultFromTrackList(trackList);
-            //return trackList;
         }
 
         //Return an array with the top10 tracks, album and imagesURL
@@ -216,6 +182,8 @@ public class Top10TracksActivityFragment extends Fragment {
                     Hashtable<String, Object> trackTable = new Hashtable<String, Object>();
                     trackTable.put("album", trackList.tracks.get(i).album.name);
                     trackTable.put("track", trackList.tracks.get(i).name);
+                    trackTable.put("id", trackList.tracks.get(i).id);
+                    trackTable.put("href", trackList.tracks.get(i).href);
                     if (trackList.tracks.get(i).album.images.isEmpty()) {
                         trackTable.put("image", "");
                     } else {
@@ -223,7 +191,6 @@ public class Top10TracksActivityFragment extends Fragment {
                     }
                     top10List.add(trackTable);
                 }
-
                 //Log.e("top10List", String.valueOf(top10List));
                 return top10List;
             }
@@ -236,63 +203,9 @@ public class Top10TracksActivityFragment extends Fragment {
                 tracksResult.addAll(resultList);
                 mTop10Adapter.notifyDataSetChanged();
 
-                trackArrayList.clear();
-                String imageUrl = "";
-
-                /*for (ArrayList resultList : trackList.tracks) {
-                    if (!track.album.images.isEmpty()) {
-                        imageUrl = track.album.images.get(0).url;
-                    }
-                    StringBuilder builder = new StringBuilder();
-                    for (ArtistSimple artist : track.artists) {
-                        if (builder.length() > 0) builder.append(", ");
-                        builder.append(artist.name);
-                    }
-                    ParcelableArray ParcelableArray = new ParcelableArray(
-                            track.name,
-                            track.album.name,
-                            builder.toString(),
-                            imageUrl,
-                            track.preview_url);
-                    trackArrayList.add(ParcelableArray);
-                }*/
             } else {
                 Toast.makeText(getActivity(), "No Track Found.Please Select Another Artist!", Toast.LENGTH_SHORT).show();
             }
         }
-
-        /*@Override
-        protected void onPostExecute(Tracks result) {
-            if (result != null) {
-                if (result.tracks.isEmpty()) {
-                    Toast.makeText(getActivity(), "Tracks not found, please search again.", Toast.LENGTH_LONG).show();
-                } else {
-                    mTracksAdapter.clear();
-                    String imageUrl = "";
-                    for (Track track : result.tracks) {
-                        if (!track.album.images.isEmpty()) {
-                            imageUrl = track.album.images.get(0).url;
-                        }
-                        StringBuilder builder = new StringBuilder();
-                        for (ArtistSimple artist : track.artists) {
-                            if (builder.length() > 0) builder.append(", ");
-                            builder.append(artist.name);
-                        }
-                        ParcelableArray ParcelableArray = new ParcelableArray(
-                                track.name,
-                                track.album.name,
-                                builder.toString(),
-                                imageUrl,
-                                track.preview_url);
-                        mTracksAdapter.add(ParcelableArray);
-                        //mTracksAdapter.notifyDataSetChanged();
-
-                    }
-                }
-            } else {
-                Toast.makeText(getActivity(), "Error: " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-            }
-        }*/
     }
-
 }
