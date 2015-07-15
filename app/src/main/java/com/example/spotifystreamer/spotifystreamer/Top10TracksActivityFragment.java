@@ -45,7 +45,7 @@ public class Top10TracksActivityFragment extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    @Override
+    /*@Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -61,7 +61,7 @@ public class Top10TracksActivityFragment extends Fragment {
             FetchTop10Task FetchTop10Task = new FetchTop10Task();
             FetchTop10Task.execute(mArtist);
         }
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -20,7 +20,12 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
     private int mArtistSelected;
     private int position;
     private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
-    private ArrayList trackToPlay;
+    private String trackToPlay;
+    private String[] id;
+    private String[] track;
+    private String[] album;
+    private String[] href;
+    private String[] image;
 
     public NowPlayingActivityFragment() {
     }
@@ -46,17 +51,23 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
             mArtistSelected = savedInstanceState.getInt("artistSelected");
             tracksResult = savedInstanceState.getStringArrayList("Top10Tracks");
             int positionMusic = mArtistSelected;
-            trackToPlay = tracksResult;
+            trackToPlay = tracksResult.get(mArtistSelected).toString();
             //trackProgress = savedInstanceState.getInt("Progress");
             //seekBar.setProgress(trackProgress);
         } else{
             int positionMusic = mArtistSelected;
+            trackToPlay = tracksResult.get(mArtistSelected).toString();
+            id = trackToPlay.split(",")[0].split("=");
+            track = trackToPlay.split(",")[1].split("=");
+            image = trackToPlay.split(",")[2].split("=");
+            href = trackToPlay.split(",")[3].split("=");
+            album = trackToPlay.split(",")[4].split("=");
+
             //trackToPlay = (Hashtable) tracksResult.get(positionMusic);
         }
 
-
-        //MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
-        //getActivity().startService(new Intent("PLAY"));
+        MediaPlayerService.setSong(href[1], track[1], image[1]);
+        getActivity().startService(new Intent("PLAY"));
 
 
         return rootView;
