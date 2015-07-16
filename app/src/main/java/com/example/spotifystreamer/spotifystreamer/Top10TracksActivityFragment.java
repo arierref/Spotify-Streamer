@@ -31,9 +31,11 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class Top10TracksActivityFragment extends Fragment {
 
+    private int selectedTrack;
     private int mPositionID;
     private SimpleAdapter mTop10Adapter;
     private String mArtist;
+    private String mNameArtist;
     private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
 
     public Top10TracksActivityFragment() {
@@ -69,8 +71,9 @@ public class Top10TracksActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_top10_tracks, container, false);
 
         Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra("artistId")) {
+        if (intent != null) {
             mArtist = intent.getStringExtra("artistId");
+            mNameArtist = intent.getStringExtra("artist");
         }
         if (savedInstanceState == null) {
             FetchTop10Task top10Tracks = new FetchTop10Task();
@@ -107,6 +110,7 @@ public class Top10TracksActivityFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), NowPlayingActivity.class);
                     intent.putExtra("artistSelected", mPositionID);
                     intent.putExtra("Top10Tracks", tracksResult);
+                    intent.putExtra("nameArtist", mNameArtist);
                 startActivity(intent);
             }
         });
@@ -114,27 +118,26 @@ public class Top10TracksActivityFragment extends Fragment {
         return rootView;
     }
 
-    public ParcelableArray loadNext() {
-        ParcelableArray selectedTrack = null;
-        /*if (mPositionID < mTracksAdapter.getCount() - 1) {
+    public int loadNext() {
+        if (mPositionID < mTop10Adapter.getCount() - 1) {
             mPositionID = mPositionID + 1;
-            selectedTrack = mTracksAdapter.getItem(mPositionID);
+            selectedTrack = mPositionID;
         }else{
-            selectedTrack = mTracksAdapter.getItem(mPositionID);
+            int selectedTrack = mPositionID;
             Toast.makeText(getActivity(), "No Next Track found. Click on Previous", Toast.LENGTH_LONG).show();
-        }*/
+        }
+
         return selectedTrack;
     }
 
-    public ParcelableArray loadPrevious() {
-        ParcelableArray selectedTrack = null;
-        /*if (mPositionID != 0) {
+    public int loadPrevious() {
+        if (mPositionID != 0) {
             mPositionID = mPositionID - 1;
-            selectedTrack = mTracksAdapter.getItem(mPositionID);
+            selectedTrack = mPositionID;
         }else{
-            selectedTrack = mTracksAdapter.getItem(mPositionID);
+            int selectedTrack = mPositionID;
             Toast.makeText(getActivity(), "No Previous Track found. Click on Next", Toast.LENGTH_LONG).show();
-        }*/
+        }
         return selectedTrack;
 
     }

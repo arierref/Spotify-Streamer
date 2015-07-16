@@ -40,8 +40,11 @@
         <service
             android:name="com.example.spotifystreamer.spotifystreamer.MediaPlayerService"
             android:icon="@mipmap/ic_launcher"
-            android:label="MediaPlayer" >
-            <intent-filter><action android:name="PLAY"/></intent-filter>
+            android:label="MediaPlayer"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="PLAY"/>
+            </intent-filter>
         </service>
 
       </application>

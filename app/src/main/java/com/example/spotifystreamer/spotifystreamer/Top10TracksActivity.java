@@ -1,19 +1,18 @@
 package com.example.spotifystreamer.spotifystreamer;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 
-public class Top10TracksActivity extends AppCompatActivity implements PlayerFragment.PlayerCallback {
+public class Top10TracksActivity extends AppCompatActivity implements NowPlayingActivityFragment.PlayerCallback {
 
     private String mArtistName;
     private String mArtistId;
-    private PlayerFragment playerFragment;
+    private NowPlayingActivityFragment nowPlayingActivityFragment;
     private Top10TracksActivityFragment top10TracksActivityFragment;
 
     @Override
@@ -21,18 +20,18 @@ public class Top10TracksActivity extends AppCompatActivity implements PlayerFrag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top10_tracks);
 
-        /*Intent intent = getIntent();
+        Intent intent = getIntent();
         //Log.e("vendo o intent", String.valueOf(intent.getStringExtra("selectedArtistId")));
         if (intent != null) {
             mArtistName = intent.getStringExtra("artist");
-            mArtistId = intent.getStringExtra("artistId");
+            //mArtistId = intent.getStringExtra("artistId");
             //Put the name of the Artist at the Action Bar, below the title.
             getSupportActionBar().setSubtitle(mArtistName);
         }
 
 
 
-        if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
 
             playerFragment = new PlayerFragment();
             top10TracksActivityFragment = new Top10TracksActivityFragment();
@@ -76,7 +75,7 @@ public class Top10TracksActivity extends AppCompatActivity implements PlayerFrag
         return super.onOptionsItemSelected(item);
     }
 
-    public void onItemSelected(ParcelableArray selectedTrack) {
+    /*public void onItemSelected(ParcelableArray selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         Bundle bundle = new Bundle();
@@ -96,22 +95,27 @@ public class Top10TracksActivity extends AppCompatActivity implements PlayerFrag
                 .addToBackStack(null).commit();
 
 
+    }*/
+
+    @Override
+    public void onItemSelected(ParcelableArray selectedTrack) {
+
     }
 
     @Override
     public void onNext() {
-        ParcelableArray selectedTrack = top10TracksActivityFragment.loadNext();
-        playerFragment.onNext(selectedTrack);
+        int selectedTrack = top10TracksActivityFragment.loadNext();
+        nowPlayingActivityFragment.onNext(selectedTrack);
     }
 
     @Override
     public void onPrevious() {
-        ParcelableArray selectedTrack = top10TracksActivityFragment.loadPrevious();
-        playerFragment.onPrevious(selectedTrack);
+        int selectedTrack = top10TracksActivityFragment.loadPrevious();
+        nowPlayingActivityFragment.onPrevious(selectedTrack);
     }
 
     public void play(View w) {
-        playerFragment.play(w);
+        nowPlayingActivityFragment.play(w);
     }
 
     public void previous(View w) {
@@ -126,6 +130,6 @@ public class Top10TracksActivity extends AppCompatActivity implements PlayerFrag
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        playerFragment.stop();
+        nowPlayingActivityFragment.stop();
     }
 }
