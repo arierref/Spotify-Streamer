@@ -130,6 +130,6 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        nowPlayingActivityFragment.stop();
+        //nowPlayingActivityFragment.stop();
     }
 }

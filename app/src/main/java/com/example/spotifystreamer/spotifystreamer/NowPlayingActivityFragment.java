@@ -108,7 +108,7 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
         href = trackToPlay.split(",")[3].split("=");
         album = trackToPlay.split(",")[4].split("=");
 
-        if (href[1] == null) {
+        if (href[1] != null) {
             String url = href[1];
             mediaPlayer = new MediaPlayer();
             mediaPlayer.seekTo(300 * trackProgress);
@@ -116,12 +116,18 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
             try {
                 mediaPlayer.setDataSource(url);
                 linkScrubBarToMediaPlayer();
-                mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                mediaPlayer.prepareAsync(); // might take long! (for buffering, etc)
+                mediaPlayer.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    public void onPrepared(MediaPlayer player) {
+        player.start();
+    }
+
     private void linkScrubBarToMediaPlayer() {
 
         mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
