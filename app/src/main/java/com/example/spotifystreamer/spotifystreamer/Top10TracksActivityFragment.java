@@ -107,11 +107,14 @@ public class Top10TracksActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Lunch parcelable for Now Playing carrying tracks list
                 mPositionID = position;
-                Intent intent = new Intent(getActivity(), NowPlayingActivity.class);
+
+                ((NowPlayingActivityFragment.PlayerCallback) getActivity())
+                        .onItemSelected(mPositionID);
+                /*Intent intent = new Intent(getActivity(), NowPlayingActivity.class);
                     intent.putExtra("artistSelected", mPositionID);
                     intent.putExtra("Top10Tracks", tracksResult);
                     intent.putExtra("nameArtist", mNameArtist);
-                startActivity(intent);
+                startActivity(intent);*/
             }
         });
 

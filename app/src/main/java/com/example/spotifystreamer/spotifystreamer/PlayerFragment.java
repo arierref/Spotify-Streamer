@@ -65,7 +65,8 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(ParcelableArray selectedTrack);
+        //public void onItemSelected(ParcelableArray selectedTrack);
+        public void onItemSelected(int selectedTrack);
 
         public void onNext();
 

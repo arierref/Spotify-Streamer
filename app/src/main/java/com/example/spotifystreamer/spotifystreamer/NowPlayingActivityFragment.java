@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import butterknife.InjectView;
  */
 public class NowPlayingActivityFragment extends Fragment implements View.OnClickListener {
 
+    public static final String TRACK_INFO_KEY = "selectedTrack";
 
     //private SimpleAdapter mTrackAdapter;
     private int mArtistSelected;
@@ -77,7 +79,8 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(ParcelableArray selectedTrack);
+        //public void onItemSelected(ParcelableArray selectedTrack);
+        public void onItemSelected(int selectedTrack);
 
         public void onNext();
 
@@ -159,21 +162,25 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
         nextButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
 
-        Intent intent = getActivity().getIntent();
+        /*Intent intent = getActivity().getIntent();
         if (intent != null) {
             mArtistSelected = intent.getIntExtra("artistSelected", position);
             mArtistName = intent.getStringExtra("nameArtist");
             tracksResult = intent.getStringArrayListExtra("Top10Tracks");
-        }
+        }*/
         if (savedInstanceState != null) {
             mArtistSelected = savedInstanceState.getInt("artistSelected");
-            mArtistName = intent.getStringExtra("nameArtist");
+            //mArtistName = intent.getStringExtra("nameArtist");
             tracksResult = savedInstanceState.getStringArrayList("Top10Tracks");
             int positionMusic = mArtistSelected;
             trackToPlay = tracksResult.get(mArtistSelected).toString();
             //trackProgress = savedInstanceState.getInt("Progress");
             //seekBar.setProgress(trackProgress);
         } else{
+            int Test = getArguments().getInt("selectedTrack");
+            //trackToPlay = getArguments().getInt("selectedTrack");
+            Log.e("trackToPlay", String.valueOf(Test));
+
             int positionMusic = mArtistSelected;
             trackToPlay = null;
             trackToPlay = tracksResult.get(mArtistSelected).toString();

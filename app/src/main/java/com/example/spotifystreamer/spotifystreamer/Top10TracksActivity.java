@@ -2,8 +2,9 @@ package com.example.spotifystreamer.spotifystreamer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -18,22 +19,21 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_top10_tracks);
 
         Intent intent = getIntent();
         //Log.e("vendo o intent", String.valueOf(intent.getStringExtra("selectedArtistId")));
         if (intent != null) {
             mArtistName = intent.getStringExtra("artist");
-            //mArtistId = intent.getStringExtra("artistId");
+            mArtistId = intent.getStringExtra("artistId");
             //Put the name of the Artist at the Action Bar, below the title.
             getSupportActionBar().setSubtitle(mArtistName);
         }
 
+        setContentView(R.layout.activity_top10_tracks);
 
+        if (savedInstanceState == null) {
 
-        /*if (savedInstanceState == null) {
-
-            playerFragment = new PlayerFragment();
+            nowPlayingActivityFragment = new NowPlayingActivityFragment();
             top10TracksActivityFragment = new Top10TracksActivityFragment();
 
             Bundle arguments = new Bundle();
@@ -42,22 +42,14 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
 
             top10TracksActivityFragment.setArguments(arguments);
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_activity_top10, top10TracksActivityFragment, "Top10TracksActivityFragment")
-                    .commit();
+            //getSupportFragmentManager().beginTransaction()
+                    //.add(R.id.fragment_activity_top10, top10TracksActivityFragment, "Top10TracksActivityFragment")
+                    //.commit();
         } else {
-            playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+            nowPlayingActivityFragment = (NowPlayingActivityFragment) getSupportFragmentManager().findFragmentByTag("NowPlayingActivityFragment");
             top10TracksActivityFragment = (Top10TracksActivityFragment) getSupportFragmentManager().findFragmentByTag("Top10TracksActivityFragment");
-        }*/
+        }
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_top10_tracks, menu);
-        return true;
     }
 
     @Override
@@ -67,6 +59,10 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == android.R.id.home) {
+            this.finish();
+            return true;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -75,32 +71,26 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
         return super.onOptionsItemSelected(item);
     }
 
-    /*public void onItemSelected(ParcelableArray selectedTrack) {
+    public void onItemSelected(int selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
+        bundle.putInt(NowPlayingActivityFragment.TRACK_INFO_KEY, selectedTrack);
+        //bundle.putStringArrayList(NowPlayingActivityFragment.TRACK_INFO_KEY, selectedTrack);
 
-        playerFragment.setArguments(bundle);
+        nowPlayingActivityFragment.setArguments(bundle);
 
         // The device is smaller, so show the fragment fullscreen
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-        // For a little polish, specify a transition animation
-        //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
         // To make it fullscreen, use the 'content' root view as the container
         // for the fragment, which is always the root view for the activity
-        transaction.add(android.R.id.content, playerFragment, "PlayerFragment")
+        transaction.add(android.R.id.content, nowPlayingActivityFragment, "NowPlayingActivityFragment")
                 .addToBackStack(null).commit();
 
-
-    }*/
-
-    @Override
-    public void onItemSelected(ParcelableArray selectedTrack) {
-
     }
+
 
     @Override
     public void onNext() {
