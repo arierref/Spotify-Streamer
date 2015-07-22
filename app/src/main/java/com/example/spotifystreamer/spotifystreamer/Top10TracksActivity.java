@@ -42,9 +42,9 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
 
             top10TracksActivityFragment.setArguments(arguments);
 
-            //getSupportFragmentManager().beginTransaction()
-                    //.add(R.id.fragment_activity_top10, top10TracksActivityFragment, "Top10TracksActivityFragment")
-                    //.commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_activity_top10, top10TracksActivityFragment, "Top10TracksActivityFragment")
+                    .commit();
         } else {
             nowPlayingActivityFragment = (NowPlayingActivityFragment) getSupportFragmentManager().findFragmentByTag("NowPlayingActivityFragment");
             top10TracksActivityFragment = (Top10TracksActivityFragment) getSupportFragmentManager().findFragmentByTag("Top10TracksActivityFragment");
@@ -71,11 +71,11 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
         return super.onOptionsItemSelected(item);
     }
 
-    public void onItemSelected(int selectedTrack) {
+    public void onItemSelected(ParcelableArray selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         Bundle bundle = new Bundle();
-        bundle.putInt(NowPlayingActivityFragment.TRACK_INFO_KEY, selectedTrack);
+        bundle.putParcelable(NowPlayingActivityFragment.TRACK_INFO_KEY, selectedTrack);
         //bundle.putStringArrayList(NowPlayingActivityFragment.TRACK_INFO_KEY, selectedTrack);
 
         nowPlayingActivityFragment.setArguments(bundle);

@@ -9,21 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.ArtistSimple;
+import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
+import retrofit.RetrofitError;
 
 
 /**
@@ -33,21 +31,22 @@ public class Top10TracksActivityFragment extends Fragment {
 
     private int selectedTrack;
     private int mPositionID;
-    private SimpleAdapter mTop10Adapter;
+    private TracksAdapter mTop10Adapter;
     private String mArtist;
     private String mNameArtist;
-    private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
+    private ArrayList<ParcelableArray> tracksResult;
 
     public Top10TracksActivityFragment() {
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putStringArrayList("TopTenTracks", tracksResult);
+        savedInstanceState.putParcelableArrayList("TopTenTracks", tracksResult);
+        savedInstanceState.putInt("selectedTrackId", mPositionID);
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    /*@Override
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -58,12 +57,12 @@ public class Top10TracksActivityFragment extends Fragment {
         }
 
         if (savedInstanceState != null) {
-            tracksResult = savedInstanceState.getStringArrayList("TopTenTracks");
+            tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
         } else {
             FetchTop10Task FetchTop10Task = new FetchTop10Task();
             FetchTop10Task.execute(mArtist);
         }
-    }*/
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,10 +78,10 @@ public class Top10TracksActivityFragment extends Fragment {
             FetchTop10Task top10Tracks = new FetchTop10Task();
             top10Tracks.execute(mArtist);
         } else {
-            tracksResult = savedInstanceState.getStringArrayList("TopTenTracks");
+            tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
         }
 
-        mTop10Adapter = new SimpleAdapter(
+        /*mTop10Adapter = new SimpleAdapter(
                 getActivity(),
                 tracksResult,
                 R.layout.list_item_top10,
@@ -96,7 +95,9 @@ public class Top10TracksActivityFragment extends Fragment {
                     Picasso.with(getActivity()).load(urlImage).fit().into(imageView);
                 }
             }
-        };
+        };*/
+
+        mTop10Adapter = new TracksAdapter(getActivity(), R.layout.list_item_top10, tracksResult);
 
         //inflating listview with the adapter
         ListView listView = (ListView) rootView.findViewById(R.id.listview_top10);
@@ -107,9 +108,9 @@ public class Top10TracksActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Lunch parcelable for Now Playing carrying tracks list
                 mPositionID = position;
-
+                ParcelableArray selectedTrack = mTop10Adapter.getItem(mPositionID);
                 ((NowPlayingActivityFragment.PlayerCallback) getActivity())
-                        .onItemSelected(mPositionID);
+                        .onItemSelected(selectedTrack);
                 /*Intent intent = new Intent(getActivity(), NowPlayingActivity.class);
                     intent.putExtra("artistSelected", mPositionID);
                     intent.putExtra("Top10Tracks", tracksResult);
@@ -125,7 +126,7 @@ public class Top10TracksActivityFragment extends Fragment {
         if (mPositionID < mTop10Adapter.getCount() - 1) {
             mPositionID = mPositionID + 1;
             selectedTrack = mPositionID;
-        }else{
+        } else {
             int selectedTrack = mPositionID;
             Toast.makeText(getActivity(), "No Next Track found. Click on Previous", Toast.LENGTH_LONG).show();
         }
@@ -137,7 +138,7 @@ public class Top10TracksActivityFragment extends Fragment {
         if (mPositionID != 0) {
             mPositionID = mPositionID - 1;
             selectedTrack = mPositionID;
-        }else{
+        } else {
             int selectedTrack = mPositionID;
             Toast.makeText(getActivity(), "No Previous Track found. Click on Next", Toast.LENGTH_LONG).show();
         }
@@ -150,15 +151,17 @@ public class Top10TracksActivityFragment extends Fragment {
         super.onStart();
     }
 
-    public class FetchTop10Task extends AsyncTask<String, Void, ArrayList> {
+    public class FetchTop10Task extends AsyncTask<String, Void, Tracks> {
+
+        private RetrofitError retrofitError;
 
         @Override
-        protected ArrayList doInBackground(String... params) {
+        protected Tracks doInBackground(String... params) {
             if (params.length == 0) {
                 return null;
             }
 
-            Tracks trackList;
+            //Tracks trackList;
             String id = params[0];
 
             SpotifyApi api = new SpotifyApi();
@@ -166,17 +169,19 @@ public class Top10TracksActivityFragment extends Fragment {
             Map map = new HashMap();
             map.put("country", "US");
 
+            Tracks trackList;
             try {
                 trackList = spotifyService.getArtistTopTrack(id, map);
-            } catch (Exception e) {
+            } catch (RetrofitError e) {
+                retrofitError = e;
                 Log.e("Exception", String.valueOf(e));
                 return null;
             }
-            return getResultFromTrackList(trackList);
+            return trackList;
         }
 
         //Return an array with the top10 tracks, album and imagesURL
-        private ArrayList getResultFromTrackList(Tracks trackList) {
+        /*private ArrayList getResultFromTrackList(Tracks trackList) {
             int numOfTrack = trackList.tracks.size();
             Log.e("numOfTrack", String.valueOf(numOfTrack));
 
@@ -200,17 +205,43 @@ public class Top10TracksActivityFragment extends Fragment {
                 //Log.e("top10List", String.valueOf(top10List));
                 return top10List;
             }
-        }
+        }*/
 
         @Override
-        protected void onPostExecute(ArrayList resultList) {
+        protected void onPostExecute(Tracks resultList) {
             if (resultList != null) {
-                tracksResult.clear();
+                /*tracksResult.clear();
                 tracksResult.addAll(resultList);
                 mTop10Adapter.notifyDataSetChanged();
 
             } else {
                 Toast.makeText(getActivity(), "No Track Found.Please Select Another Artist!", Toast.LENGTH_SHORT).show();
+            }*/
+                if (resultList.tracks.isEmpty()) {
+                    Toast.makeText(getActivity(), "Track not found, please refine your search", Toast.LENGTH_LONG).show();
+                } else {
+                    mTop10Adapter.clear();
+                    String ImageUrl = "";
+                    for (Track track : resultList.tracks) {
+                        if (!track.album.images.isEmpty()) {
+                            ImageUrl = track.album.images.get(0).url;
+                        }
+                        StringBuilder builder = new StringBuilder();
+                        for (ArtistSimple artist : track.artists) {
+                            if (builder.length() > 0) builder.append(", ");
+                            builder.append(artist.name);
+                        }
+                        ParcelableArray parcelableArray = new ParcelableArray(
+                                track.name,
+                                track.album.name,
+                                builder.toString(),
+                                ImageUrl,
+                                track.preview_url);
+                        mTop10Adapter.add(parcelableArray);
+                    }
+                }
+            } else {
+                Toast.makeText(getActivity(), "We've gotten an error: " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }

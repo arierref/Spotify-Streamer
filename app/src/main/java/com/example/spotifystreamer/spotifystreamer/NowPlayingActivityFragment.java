@@ -80,7 +80,7 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
          * DetailFragmentCallback for when an item has been selected.
          */
         //public void onItemSelected(ParcelableArray selectedTrack);
-        public void onItemSelected(int selectedTrack);
+        public void onItemSelected(ParcelableArray selectedTrack);
 
         public void onNext();
 
