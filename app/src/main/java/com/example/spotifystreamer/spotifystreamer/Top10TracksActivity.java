@@ -94,13 +94,13 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
 
     @Override
     public void onNext() {
-        int selectedTrack = top10TracksActivityFragment.loadNext();
+        ParcelableArray selectedTrack = top10TracksActivityFragment.loadNext();
         nowPlayingActivityFragment.onNext(selectedTrack);
     }
 
     @Override
     public void onPrevious() {
-        int selectedTrack = top10TracksActivityFragment.loadPrevious();
+        ParcelableArray selectedTrack = top10TracksActivityFragment.loadPrevious();
         nowPlayingActivityFragment.onPrevious(selectedTrack);
     }
 
@@ -120,6 +120,6 @@ public class Top10TracksActivity extends AppCompatActivity implements NowPlaying
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //nowPlayingActivityFragment.stop();
+        nowPlayingActivityFragment.stop();
     }
 }

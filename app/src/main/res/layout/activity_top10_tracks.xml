@@ -4,4 +4,6 @@
     android:name="com.example.spotifystreamer.spotifystreamer.Top10TracksActivityFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout="@layout/fragment_top10_tracks" />
+    tools:layout="@layout/fragment_top10_tracks"
+    tools:context=".TopTenTracksActivity"
+    tools:ignore="MergeRootFrame" />

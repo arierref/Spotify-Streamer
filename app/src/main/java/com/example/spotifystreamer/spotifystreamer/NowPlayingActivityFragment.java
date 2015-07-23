@@ -1,16 +1,16 @@
 package com.example.spotifystreamer.spotifystreamer;
 
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -29,7 +28,7 @@ import butterknife.InjectView;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class NowPlayingActivityFragment extends Fragment implements View.OnClickListener {
+public class NowPlayingActivityFragment extends DialogFragment implements View.OnClickListener {
 
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
@@ -37,7 +36,7 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
     private int mArtistSelected;
     private int position;
     private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
-    private String trackToPlay;
+    private ParcelableArray trackToPlay;
     private String mArtistName;
     private String[] id;
     private String[] track;
@@ -68,7 +67,7 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
     TextView trackName;
 
     @InjectView(R.id.seekBar)
-    SeekBar seekBar;
+    SeekBar scrubBar;
 
     private int trackProgress = 0;
 
@@ -88,67 +87,18 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the searched artist in case of a screen rotation for example.
-        savedInstanceState.putInt("artistSelected", mArtistSelected);
-        savedInstanceState.putString("nameArtist", mArtistName);
-        savedInstanceState.putStringArrayList("Top10Tracks", tracksResult);
-        super.onSaveInstanceState(savedInstanceState);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // The only reason you might override this method when using onCreateView() is
+        // to modify any dialog characteristics. For example, the dialog includes a
+        // title by default, but your custom layout might not need it. So here you can
+        // remove the dialog title, but you must call the superclass to get the Dialog.
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+
+        return dialog;
     }
 
-    private void initializeMediaPlayer() {
-
-        Intent intent = getActivity().getIntent();
-        if (intent != null) {
-            mArtistSelected = intent.getIntExtra("artistSelected", position);
-            mArtistName = intent.getStringExtra("nameArtist");
-            tracksResult = intent.getStringArrayListExtra("Top10Tracks");
-        }
-        trackToPlay = tracksResult.get(mArtistSelected).toString();
-        id = trackToPlay.split(",")[0].split("=");
-        track = trackToPlay.split(",")[1].split("=");
-        image = trackToPlay.split(",")[2].split("=");
-        href = trackToPlay.split(",")[3].split("=");
-        album = trackToPlay.split(",")[4].split("=");
-
-        if (href[1] != null) {
-            String url = href[1];
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.seekTo(300 * trackProgress);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            try {
-                mediaPlayer.setDataSource(url);
-                linkScrubBarToMediaPlayer();
-                mediaPlayer.prepareAsync(); // might take long! (for buffering, etc)
-                mediaPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void onPrepared(MediaPlayer player) {
-        player.start();
-    }
-
-    private void linkScrubBarToMediaPlayer() {
-
-        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                if (mp.isPlaying() && seekBar != null) {
-                    seekBar.setProgress(mp.getCurrentPosition() / 300);
-                }
-            }
-        });
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-                seekBar.setProgress(0);
-            }
-        });
-    }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -162,154 +112,39 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
         nextButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
 
-        /*Intent intent = getActivity().getIntent();
-        if (intent != null) {
-            mArtistSelected = intent.getIntExtra("artistSelected", position);
-            mArtistName = intent.getStringExtra("nameArtist");
-            tracksResult = intent.getStringArrayListExtra("Top10Tracks");
-        }*/
-        if (savedInstanceState != null) {
-            mArtistSelected = savedInstanceState.getInt("artistSelected");
-            //mArtistName = intent.getStringExtra("nameArtist");
-            tracksResult = savedInstanceState.getStringArrayList("Top10Tracks");
-            int positionMusic = mArtistSelected;
-            trackToPlay = tracksResult.get(mArtistSelected).toString();
-            //trackProgress = savedInstanceState.getInt("Progress");
-            //seekBar.setProgress(trackProgress);
-        } else{
-            int Test = getArguments().getInt("selectedTrack");
-            //trackToPlay = getArguments().getInt("selectedTrack");
-            Log.e("trackToPlay", String.valueOf(Test));
 
-            int positionMusic = mArtistSelected;
-            trackToPlay = null;
-            trackToPlay = tracksResult.get(mArtistSelected).toString();
-            id = trackToPlay.split(",")[0].split("=");
-            track = trackToPlay.split(",")[1].split("=");
-            image = trackToPlay.split(",")[2].split("=");
-            href = trackToPlay.split(",")[3].split("=");
-            album = trackToPlay.split(",")[4].split("=");
-
-            //trackToPlay = (Hashtable) tracksResult.get(positionMusic);
-        }
-
-        if (image != null) {
-            Picasso.with(getActivity()).load(image[1]).into(artistImage);
-        }
-
-        if (mArtistName != null) {
-            artistName.setText(mArtistName);
-        }
-
-        if (album != null) {
-            albumName.setText(album[1]);
-        }
-
-        if (track != null) {
-            trackName.setText(track[1]);
-        }
-
-        if (mediaPlayer == null) {
-            initializeMediaPlayer();
+        if (savedInstanceState == null) {
+            trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
         } else {
-            if (href[1] != null)
-                try {
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(href[1]);
-                    linkScrubBarToMediaPlayer();
-                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            if (mediaPlayer.isPlaying()) {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-            } else {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-            }
-            linkScrubBarToMediaPlayer();
+            trackToPlay = savedInstanceState.getParcelable(TRACK_INFO_KEY);
+            trackProgress = savedInstanceState.getInt("Progress");
+            scrubBar.setProgress(trackProgress);
         }
 
-        //MediaPlayerService.setSong(href[1], track[1], image[1]);
-        //getActivity().startService(new Intent("PLAY"));
+        if (!trackToPlay.imageUrl.isEmpty()) {
+            Picasso.with(getActivity()).load(trackToPlay.imageUrl).into(artistImage);
+        }
+
+        if (!trackToPlay.mArtistName.isEmpty()) {
+            artistName.setText(trackToPlay.mArtistName);
+        }
+
+        if (!trackToPlay.mAlbum.isEmpty()) {
+            albumName.setText(trackToPlay.mAlbum);
+        }
+
+        if (!trackToPlay.mTrack.isEmpty()) {
+            trackName.setText(trackToPlay.mTrack);
+        }
 
         playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
         previousButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_previous, 0, 0, 0);
         nextButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_next, 0, 0, 0);
 
+        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
+        getActivity().startService(new Intent("PLAY"));
+
         return rootView;
-    }
-
-    public void onNext(int mArtistSelected) {
-
-        int positionMusic = mArtistSelected;
-        trackToPlay = tracksResult.get(mArtistSelected).toString();
-        id = trackToPlay.split(",")[0].split("=");
-        track = trackToPlay.split(",")[1].split("=");
-        image = trackToPlay.split(",")[2].split("=");
-        href = trackToPlay.split(",")[3].split("=");
-        album = trackToPlay.split(",")[4].split("=");
-
-        if (image != null) {
-            Picasso.with(getActivity()).load(image[1]).into(artistImage);
-        }
-
-        if (mArtistName != null) {
-            artistName.setText(mArtistName);
-        }
-
-        if (album != null) {
-            albumName.setText(album[1]);
-        }
-
-        if (track != null) {
-            trackName.setText(track[1]);
-        }
-
-        seekBar.setProgress(0);
-
-        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-        MediaPlayerService.setSong(href[1], track[1], image[1]);
-        getActivity().startService(new Intent("PLAY"));
-
-
-
-    }
-
-    public void onPrevious(int mArtistSelected) {
-
-        int positionMusic = mArtistSelected;
-        trackToPlay = tracksResult.get(mArtistSelected).toString();
-        id = trackToPlay.split(",")[0].split("=");
-        track = trackToPlay.split(",")[1].split("=");
-        image = trackToPlay.split(",")[2].split("=");
-        href = trackToPlay.split(",")[3].split("=");
-        album = trackToPlay.split(",")[4].split("=");
-
-        if (image != null) {
-            Picasso.with(getActivity()).load(image[1]).into(artistImage);
-        }
-
-        if (mArtistName != null) {
-            artistName.setText(mArtistName);
-        }
-
-        if (album != null) {
-            albumName.setText(album[1]);
-        }
-
-        if (track != null) {
-            trackName.setText(track[1]);
-        }
-
-        seekBar.setProgress(0);
-
-        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-        MediaPlayerService.setSong(href[1], track[1], image[1]);
-        getActivity().startService(new Intent("PLAY"));
-
-    }
-
-    public void stop() {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -323,6 +158,91 @@ public class NowPlayingActivityFragment extends Fragment implements View.OnClick
             MediaPlayerService.getInstance().startMusic();
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save the searched artist in case of a screen rotation for example.
+        savedInstanceState.putInt("Progress", scrubBar.getProgress());
+        savedInstanceState.putParcelable(TRACK_INFO_KEY, trackToPlay);
+
+    }
+
+    private void initializeMediaPlayer() {
+        if (!trackToPlay.previewUrl.isEmpty()) {
+            String url = trackToPlay.previewUrl;
+        }
+    }
+
+    private void linkScrubBarToMediaPlayer() {
+
+    }
+
+    public void onNext(ParcelableArray mArtistSelected) {
+
+        trackToPlay = mArtistSelected;
+
+        if (!trackToPlay.imageUrl.isEmpty()) {
+            Picasso.with(getActivity()).load(trackToPlay.imageUrl).into(artistImage);
+        }
+
+        if (!trackToPlay.mArtistName.isEmpty()) {
+            artistName.setText(trackToPlay.mArtistName);
+        }
+
+        if (!trackToPlay.mAlbum.isEmpty()) {
+            albumName.setText(trackToPlay.mAlbum);
+        }
+
+        if (!trackToPlay.mTrack.isEmpty()) {
+            trackName.setText(trackToPlay.mTrack);
+        }
+
+        scrubBar.setProgress(0);
+
+        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
+        getActivity().startService(new Intent("PLAY"));
+
+    }
+
+    public void onPrevious(ParcelableArray mArtistSelected) {
+
+        trackToPlay = mArtistSelected;
+
+        if (!trackToPlay.imageUrl.isEmpty()) {
+            Picasso.with(getActivity()).load(trackToPlay.imageUrl).into(artistImage);
+        }
+
+        if (!trackToPlay.mArtistName.isEmpty()) {
+            artistName.setText(trackToPlay.mArtistName);
+        }
+
+        if (!trackToPlay.mAlbum.isEmpty()) {
+            albumName.setText(trackToPlay.mAlbum);
+        }
+
+        if (!trackToPlay.mTrack.isEmpty()) {
+            trackName.setText(trackToPlay.mTrack);
+        }
+
+        scrubBar.setProgress(0);
+
+        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
+        getActivity().startService(new Intent("PLAY"));
+
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+    public void stop() {
+    }
+
 
     @Override
     public void onClick(View v) {

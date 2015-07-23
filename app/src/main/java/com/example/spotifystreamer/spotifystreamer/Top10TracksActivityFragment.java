@@ -1,6 +1,5 @@
 package com.example.spotifystreamer.spotifystreamer;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,7 +28,7 @@ import retrofit.RetrofitError;
  */
 public class Top10TracksActivityFragment extends Fragment {
 
-    private int selectedTrack;
+    private ParcelableArray selectedTrack;
     private int mPositionID;
     private TracksAdapter mTop10Adapter;
     private String mArtist;
@@ -69,7 +68,16 @@ public class Top10TracksActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_top10_tracks, container, false);
 
-        Intent intent = getActivity().getIntent();
+
+        if (savedInstanceState != null) {
+            tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
+            mPositionID = savedInstanceState.getInt("selectedTrackId");
+
+        } else {
+            tracksResult = new ArrayList<ParcelableArray>();
+        }
+
+        /*Intent intent = getActivity().getIntent();
         if (intent != null) {
             mArtist = intent.getStringExtra("artistId");
             mNameArtist = intent.getStringExtra("artist");
@@ -79,7 +87,7 @@ public class Top10TracksActivityFragment extends Fragment {
             top10Tracks.execute(mArtist);
         } else {
             tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
-        }
+        }*/
 
         /*mTop10Adapter = new SimpleAdapter(
                 getActivity(),
@@ -122,24 +130,26 @@ public class Top10TracksActivityFragment extends Fragment {
         return rootView;
     }
 
-    public int loadNext() {
+    public ParcelableArray loadNext() {
+        ParcelableArray selectedTrack = null;
         if (mPositionID < mTop10Adapter.getCount() - 1) {
             mPositionID = mPositionID + 1;
-            selectedTrack = mPositionID;
+            selectedTrack = mTop10Adapter.getItem(mPositionID);
         } else {
-            int selectedTrack = mPositionID;
+            selectedTrack = mTop10Adapter.getItem(mPositionID);
             Toast.makeText(getActivity(), "No Next Track found. Click on Previous", Toast.LENGTH_LONG).show();
         }
 
         return selectedTrack;
     }
 
-    public int loadPrevious() {
+    public ParcelableArray loadPrevious() {
+        ParcelableArray selectedTrack = null;
         if (mPositionID != 0) {
             mPositionID = mPositionID - 1;
-            selectedTrack = mPositionID;
+            selectedTrack = mTop10Adapter.getItem(mPositionID);
         } else {
-            int selectedTrack = mPositionID;
+            selectedTrack = mTop10Adapter.getItem(mPositionID);
             Toast.makeText(getActivity(), "No Previous Track found. Click on Next", Toast.LENGTH_LONG).show();
         }
         return selectedTrack;
@@ -238,6 +248,7 @@ public class Top10TracksActivityFragment extends Fragment {
                                 ImageUrl,
                                 track.preview_url);
                         mTop10Adapter.add(parcelableArray);
+                        mTop10Adapter.notifyDataSetChanged();
                     }
                 }
             } else {
