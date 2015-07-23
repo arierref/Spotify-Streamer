@@ -1,5 +1,6 @@
 package com.example.spotifystreamer.spotifystreamer;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,31 +37,6 @@ public class Top10TracksActivityFragment extends Fragment {
     private ArrayList<ParcelableArray> tracksResult;
 
     public Top10TracksActivityFragment() {
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putParcelableArrayList("TopTenTracks", tracksResult);
-        savedInstanceState.putInt("selectedTrackId", mPositionID);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = getArguments();
-
-        if (arguments != null) {
-            mArtist = arguments.getString("artistId");
-        }
-
-        if (savedInstanceState != null) {
-            tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
-        } else {
-            FetchTop10Task FetchTop10Task = new FetchTop10Task();
-            FetchTop10Task.execute(mArtist);
-        }
     }
 
     @Override
@@ -254,6 +230,32 @@ public class Top10TracksActivityFragment extends Fragment {
             } else {
                 Toast.makeText(getActivity(), "We've gotten an error: " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
+        }
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelableArrayList("TopTenTracks", tracksResult);
+        savedInstanceState.putInt("selectedTrackId", mPositionID);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = getArguments();
+
+        if (arguments != null) {
+            mArtist = arguments.getString("artistId");
+        }
+
+        if (savedInstanceState != null) {
+            tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
+        } else {
+            Intent intent = getActivity().getIntent();
+            mArtist = intent.getStringExtra("artistId");
+            FetchTop10Task FetchTop10Task = new FetchTop10Task();
+            FetchTop10Task.execute(mArtist);
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.spotifystreamer.spotifystreamer;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,6 +35,10 @@ public class MainActivityFragment extends Fragment {
     //private String artistList = new ArrayList<Hashtable<String, Object>>();
 
     public MainActivityFragment() {
+    }
+
+    public interface Callback {
+        public void onItemSelected(String id, String name);
     }
 
     @Override
@@ -122,10 +125,14 @@ public class MainActivityFragment extends Fragment {
                 //Log.e("Artista selecionado", String.valueOf(selectedArtist));
                 String selectedArtistId = (String) selectedArtist.get("id");
                 String selectedArtistName = (String) selectedArtist.get("name");
-                Intent intent = new Intent(getActivity(), Top10TracksActivity.class);
-                    intent.putExtra("artistId", selectedArtistId);
-                    intent.putExtra("artist", selectedArtistName);
-                startActivity(intent);
+
+                ((Callback)getActivity())
+                        .onItemSelected(selectedArtistId, selectedArtistName);
+
+                //Intent intent = new Intent(getActivity(), Top10TracksActivity.class);
+                    //intent.putExtra("artistId", selectedArtistId);
+                    //intent.putExtra("artist", selectedArtistName);
+                //startActivity(intent);
             }
         });
 
