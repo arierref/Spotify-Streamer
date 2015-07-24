@@ -29,10 +29,8 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
  */
 public class MainActivityFragment extends Fragment {
 
-    //private ArrayAdapter mArtistAdapter;
     private SimpleAdapter mArtistAdapter;
     private ArrayList artistsResult = new ArrayList<Hashtable<String, Object>>();
-    //private String artistList = new ArrayList<Hashtable<String, Object>>();
 
     public MainActivityFragment() {
     }
@@ -57,28 +55,6 @@ public class MainActivityFragment extends Fragment {
         }
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        //String[] artistArray = {
-        //"Coldplay",
-        //"Maroon 5",
-        //"Wednesday - Snow - 63/54",
-        //"Thursday - Rainy - 83/54",
-        //"Friday - Rainy - 73/58",
-        //"Saturday - Gloomy - 64/54",
-        //"Sunday - Rainy - 73/64"
-        //};
-
-        //Generate a array list
-        //List<String> artistList = new ArrayList<String>(
-        //Arrays.asList(artistArray));
-
-        //Initiating the adapter
-        //mArtistAdapter = new ArrayAdapter<String>(
-        //getActivity(),
-        //R.layout.list_item_artist,
-        //R.id.textView,
-        //listaArtista);
-
 
         //inflating listview with the adapter
         ListView listView = (ListView) rootView.findViewById(R.id.listview_artist);
@@ -125,14 +101,8 @@ public class MainActivityFragment extends Fragment {
                 //Log.e("Artista selecionado", String.valueOf(selectedArtist));
                 String selectedArtistId = (String) selectedArtist.get("id");
                 String selectedArtistName = (String) selectedArtist.get("name");
-
                 ((Callback)getActivity())
                         .onItemSelected(selectedArtistId, selectedArtistName);
-
-                //Intent intent = new Intent(getActivity(), Top10TracksActivity.class);
-                    //intent.putExtra("artistId", selectedArtistId);
-                    //intent.putExtra("artist", selectedArtistName);
-                //startActivity(intent);
             }
         });
 
@@ -153,7 +123,6 @@ public class MainActivityFragment extends Fragment {
             try {
                 artistList = spotifyService.searchArtists(artista);
             } catch (Exception e) {
-                //Toast.makeText(getActivity(), "Connection Error, Try again.", Toast.LENGTH_SHORT).show();
                 return null;
             }
 
