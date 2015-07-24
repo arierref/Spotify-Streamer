@@ -1,6 +1,5 @@
 package com.example.spotifystreamer.spotifystreamer;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -251,9 +250,9 @@ public class Top10TracksActivityFragment extends Fragment {
 
         if (savedInstanceState != null) {
             tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
-        } else {
-            Intent intent = getActivity().getIntent();
-            mArtist = intent.getStringExtra("artistId");
+        } else if (mArtist != null) {
+            //Intent intent = getActivity().getIntent();
+            //mArtist = intent.getStringExtra("artistId");
             FetchTop10Task FetchTop10Task = new FetchTop10Task();
             FetchTop10Task.execute(mArtist);
         }

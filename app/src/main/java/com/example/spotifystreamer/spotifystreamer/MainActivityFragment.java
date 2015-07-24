@@ -101,8 +101,7 @@ public class MainActivityFragment extends Fragment {
                 //Log.e("Artista selecionado", String.valueOf(selectedArtist));
                 String selectedArtistId = (String) selectedArtist.get("id");
                 String selectedArtistName = (String) selectedArtist.get("name");
-                ((Callback)getActivity())
-                        .onItemSelected(selectedArtistId, selectedArtistName);
+                ((Callback)getActivity()).onItemSelected(selectedArtistId, selectedArtistName);
             }
         });
 
