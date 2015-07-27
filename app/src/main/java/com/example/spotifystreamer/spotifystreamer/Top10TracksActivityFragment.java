@@ -28,6 +28,8 @@ import retrofit.RetrofitError;
  */
 public class Top10TracksActivityFragment extends Fragment {
 
+    private static final String LOG_TAG = Top10TracksActivityFragment.class.getSimpleName();
+
     private ParcelableArray selectedTrack;
     private int mPositionID;
     private TracksAdapter mTop10Adapter;

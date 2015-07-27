@@ -30,6 +30,8 @@ import butterknife.InjectView;
  */
 public class NowPlayingActivityFragment extends DialogFragment implements View.OnClickListener {
 
+    private static final String LOG_TAG = NowPlayingActivityFragment.class.getSimpleName();
+
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
     //private SimpleAdapter mTrackAdapter;
@@ -38,11 +40,6 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
     private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
     private ParcelableArray trackToPlay;
     private String mArtistName;
-    private String[] id;
-    private String[] track;
-    private String[] album;
-    private String[] href;
-    private String[] image;
     MediaPlayer mediaPlayer;
 
     @InjectView(R.id.artistImage)

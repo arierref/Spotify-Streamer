@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.spotifystreamer.spotifystreamer.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,7 +20,7 @@
         </activity>
 
         <activity
-            android:name="com.example.spotifystreamer.spotifystreamer.Top10TracksActivity"
+            android:name=".Top10TracksActivity"
             android:label="@string/title_activity_top10_tracks"
             android:parentActivityName="com.example.spotifystreamer.spotifystreamer.MainActivity" >
             <meta-data
@@ -29,7 +29,7 @@
         </activity>
 
         <activity
-            android:name="com.example.spotifystreamer.spotifystreamer.NowPlayingActivity"
+            android:name=".NowPlayingActivity"
             android:label="@string/title_activity_now_playing"
             android:parentActivityName="com.example.spotifystreamer.spotifystreamer.Top10TracksActivity" >
             <meta-data
