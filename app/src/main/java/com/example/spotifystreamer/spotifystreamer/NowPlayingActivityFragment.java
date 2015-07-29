@@ -3,7 +3,6 @@ package com.example.spotifystreamer.spotifystreamer;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -18,9 +17,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -34,13 +30,7 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
 
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
-    //private SimpleAdapter mTrackAdapter;
-    private int mArtistSelected;
-    private int position;
-    private ArrayList tracksResult = new ArrayList<Hashtable<String, Object>>();
     private ParcelableArray trackToPlay;
-    private String mArtistName;
-    MediaPlayer mediaPlayer;
 
     @InjectView(R.id.artistImage)
     ImageView artistImage;
@@ -160,8 +150,9 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         // Save the searched artist in case of a screen rotation for example.
-        savedInstanceState.putInt("Progress", scrubBar.getProgress());
         savedInstanceState.putParcelable(TRACK_INFO_KEY, trackToPlay);
+        savedInstanceState.putInt("Progress", scrubBar.getProgress());
+
 
     }
 

@@ -30,7 +30,7 @@ public class Top10TracksActivityFragment extends Fragment {
 
     private static final String LOG_TAG = Top10TracksActivityFragment.class.getSimpleName();
 
-    private ParcelableArray selectedTrack;
+    //private ParcelableArray selectedTrack;
     private int mPositionID;
     private TracksAdapter mTop10Adapter;
     private String mArtist;
@@ -96,11 +96,6 @@ public class Top10TracksActivityFragment extends Fragment {
                 ParcelableArray selectedTrack = mTop10Adapter.getItem(mPositionID);
                 ((NowPlayingActivityFragment.PlayerCallback) getActivity())
                         .onItemSelected(selectedTrack);
-                /*Intent intent = new Intent(getActivity(), NowPlayingActivity.class);
-                    intent.putExtra("artistSelected", mPositionID);
-                    intent.putExtra("Top10Tracks", tracksResult);
-                    intent.putExtra("nameArtist", mNameArtist);
-                startActivity(intent);*/
             }
         });
 
@@ -205,7 +200,7 @@ public class Top10TracksActivityFragment extends Fragment {
                 Toast.makeText(getActivity(), "No Track Found.Please Select Another Artist!", Toast.LENGTH_SHORT).show();
             }*/
                 if (resultList.tracks.isEmpty()) {
-                    Toast.makeText(getActivity(), "Track not found, please refine your search", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Track not found, please search for another artist", Toast.LENGTH_LONG).show();
                 } else {
                     mTop10Adapter.clear();
                     String ImageUrl = "";
@@ -229,15 +224,9 @@ public class Top10TracksActivityFragment extends Fragment {
                     }
                 }
             } else {
-                Toast.makeText(getActivity(), "We've gotten an error: " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "We've had an error: " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
         }
-    }
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putParcelableArrayList("TopTenTracks", tracksResult);
-        savedInstanceState.putInt("selectedTrackId", mPositionID);
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -252,11 +241,18 @@ public class Top10TracksActivityFragment extends Fragment {
 
         if (savedInstanceState != null) {
             tracksResult = savedInstanceState.getParcelableArrayList("TopTenTracks");
-        } else if (mArtist != null) {
+        } else  { //if (mArtist != null)
             //Intent intent = getActivity().getIntent();
             //mArtist = intent.getStringExtra("artistId");
             FetchTop10Task FetchTop10Task = new FetchTop10Task();
             FetchTop10Task.execute(mArtist);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelableArrayList("TopTenTracks", tracksResult);
+        savedInstanceState.putInt("selectedTrackId", mPositionID);
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

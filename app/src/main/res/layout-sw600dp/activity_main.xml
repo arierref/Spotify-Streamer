@@ -9,7 +9,7 @@
     tools:context="com.example.spotifystreamer.spotifystreamer.MainActivity">
 
     <fragment
-        android:id="@+id/fragment"
+        android:id="@+id/fragment_artist"
         android:name="com.example.spotifystreamer.spotifystreamer.MainActivityFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"

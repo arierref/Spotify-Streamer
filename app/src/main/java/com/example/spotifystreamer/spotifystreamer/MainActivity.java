@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback, NowPlayingActivityFragment.PlayerCallback {
+
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private boolean mTwoPane;
     private NowPlayingActivityFragment newFragment;
@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         } else {
             mTwoPane = false;
         }
+
+        MainActivityFragment mainActivityFragment =  ((MainActivityFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_artist));
 
     }
 
@@ -59,28 +62,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onItemSelected(ParcelableArray selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         newFragment = new NowPlayingActivityFragment();
@@ -91,15 +72,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         newFragment.setArguments(bundle);
 
         if (mTwoPane) {
-            // The device is using a large layout, so show the fragment as a dialog
+            // The device is using a large layout, so show the topTenTracksFragment as a dialog
             newFragment.show(fragmentManager, "dialog");
         } else {
-            // The device is smaller, so show the fragment fullscreen
+            // The device is smaller, so show the topTenTracksFragment fullscreen
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             // For a little polish, specify a transition animation
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             // To make it fullscreen, use the 'content' root view as the container
-            // for the fragment, which is always the root view for the activity
+            // for the topTenTracksFragment, which is always the root view for the activity
             transaction.add(android.R.id.content, newFragment)
                     .addToBackStack(null).commit();
         }
@@ -122,4 +103,5 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     public void play(View w) {
         newFragment.play(w);
     }
+
 }

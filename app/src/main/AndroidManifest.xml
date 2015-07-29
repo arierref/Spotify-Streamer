@@ -28,15 +28,6 @@
                 android:value="com.example.spotifystreamer.spotifystreamer.MainActivity" />
         </activity>
 
-        <activity
-            android:name=".NowPlayingActivity"
-            android:label="@string/title_activity_now_playing"
-            android:parentActivityName="com.example.spotifystreamer.spotifystreamer.Top10TracksActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.spotifystreamer.spotifystreamer.Top10TracksActivity" />
-        </activity>
-
         <service
             android:name="com.example.spotifystreamer.spotifystreamer.MediaPlayerService"
             android:icon="@mipmap/ic_launcher"

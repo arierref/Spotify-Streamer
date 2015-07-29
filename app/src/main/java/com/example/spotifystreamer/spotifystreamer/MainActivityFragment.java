@@ -29,8 +29,12 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
  */
 public class MainActivityFragment extends Fragment {
 
+    private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
+
     private SimpleAdapter mArtistAdapter;
     private ArrayList artistsResult = new ArrayList<Hashtable<String, Object>>();
+
+    private ArrayList<ParcelableArray> artistArrayList;
 
     public MainActivityFragment() {
     }
@@ -101,11 +105,16 @@ public class MainActivityFragment extends Fragment {
                 //Log.e("Artista selecionado", String.valueOf(selectedArtist));
                 String selectedArtistId = (String) selectedArtist.get("id");
                 String selectedArtistName = (String) selectedArtist.get("name");
-                ((Callback)getActivity()).onItemSelected(selectedArtistId, selectedArtistName);
+                ((Callback) getActivity()).onItemSelected(selectedArtistId, selectedArtistName);
             }
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     public class FetchArtistTask extends AsyncTask<String, Void, ArrayList> {
