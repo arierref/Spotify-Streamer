@@ -2,10 +2,14 @@ package com.example.spotifystreamer.spotifystreamer;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +29,8 @@ import butterknife.InjectView;
  * A placeholder fragment containing a simple view.
  */
 public class NowPlayingActivityFragment extends DialogFragment implements View.OnClickListener {
+
+    private int mFileDuration;
 
     private static final String LOG_TAG = NowPlayingActivityFragment.class.getSimpleName();
 
@@ -73,6 +79,39 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
         public void onPrevious();
     }
 
+    public void stop() {
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(MediaPlayerService.BROADCAST_ACTION));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateUI(intent);
+        }
+    };
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void updateUI(Intent intent) {
+        int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition", 0);
+        scrubBar.setProgress(mPlayerTrackPosition / 300);
+        if (MediaPlayerService.getInstance().isPlaying()) {
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
+        } else {
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
+        }
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // The only reason you might override this method when using onCreateView() is
@@ -104,8 +143,6 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
             trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
         } else {
             trackToPlay = savedInstanceState.getParcelable(TRACK_INFO_KEY);
-            trackProgress = savedInstanceState.getInt("Progress");
-            scrubBar.setProgress(trackProgress);
         }
 
         if (!trackToPlay.imageUrl.isEmpty()) {
@@ -124,12 +161,36 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
             trackName.setText(trackToPlay.mTrack);
         }
 
+        //if (MediaPlayerService.getInstance().isPlaying()) {
+            //MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+        //}
+
         playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
         previousButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_previous, 0, 0, 0);
         nextButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_next, 0, 0, 0);
 
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
         getActivity().startService(new Intent("PLAY"));
+
+        scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.i(LOG_TAG, "Progress " + progress);
+                if (fromUser) {
+                    MediaPlayerService.getInstance().seekMusicTo(300 * progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         return rootView;
     }
@@ -151,18 +212,7 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
         super.onSaveInstanceState(savedInstanceState);
         // Save the searched artist in case of a screen rotation for example.
         savedInstanceState.putParcelable(TRACK_INFO_KEY, trackToPlay);
-        savedInstanceState.putInt("Progress", scrubBar.getProgress());
 
-
-    }
-
-    private void initializeMediaPlayer() {
-        if (!trackToPlay.previewUrl.isEmpty()) {
-            String url = trackToPlay.previewUrl;
-        }
-    }
-
-    private void linkScrubBarToMediaPlayer() {
 
     }
 
@@ -226,11 +276,6 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
-
-    public void stop() {
-    }
-
 
     @Override
     public void onClick(View v) {

@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/spotifystreamer/spotifystreamer/Top10TracksActivity.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/spotifystreamer/spotifystreamer/Top10TracksActivityFragment.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/view_notification.xml" charset="windows-1252" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
