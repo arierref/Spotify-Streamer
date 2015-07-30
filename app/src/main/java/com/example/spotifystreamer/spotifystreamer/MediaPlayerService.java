@@ -115,7 +115,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private void DisplayLoggingInfo() {
         Log.d(LOG_TAG, "DisplayLoggingInfo " + getCurrentPosition());
+
         intent.putExtra("mPlayerTrackPosition", getCurrentPosition());
+        intent.putExtra("mPlayerTrackDuration", getMusicDuration());
         sendBroadcast(intent);
     }
 
@@ -199,8 +201,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public int getMusicDuration() {
-        // Return current music duration
-        return 0;
+        int currentDuration = 0;
+        try {
+            currentDuration = mMediaPlayer.getDuration();
+        } catch (IllegalStateException excp) {
+            Log.d(LOG_TAG, "getCurrentPosition inconsistent state mplayer");
+        }
+
+        // Return current position
+        return currentDuration;
     }
 
     public int getCurrentPosition() {

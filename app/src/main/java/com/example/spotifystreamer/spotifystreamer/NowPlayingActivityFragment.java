@@ -62,7 +62,13 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
     @InjectView(R.id.seekBar)
     SeekBar scrubBar;
 
-    private int trackProgress = 0;
+    @InjectView(R.id.timeStart)
+    TextView timeStart;
+
+    @InjectView(R.id.timeEnd)
+    TextView timeEnd;
+
+    //private int trackProgress = 0;
 
     public NowPlayingActivityFragment() {
     }
@@ -104,7 +110,27 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void updateUI(Intent intent) {
         int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition", 0);
+        int mPlayerTrackDuration = intent.getIntExtra("mPlayerTrackDuration", 0);
+
+        //Log.e("mPlayerTrackDuration", String.valueOf(mPlayerTrackDuration));
+
         scrubBar.setProgress(mPlayerTrackPosition / 300);
+        String musicDuration = String.valueOf((mPlayerTrackDuration - mPlayerTrackPosition)/1000);
+        String maxDuration = String.valueOf((mPlayerTrackDuration)/1000);
+        if ((mPlayerTrackDuration - mPlayerTrackPosition)/1000 < 10){
+            timeStart.setText("0:0" + musicDuration);
+        }else if ((mPlayerTrackDuration - mPlayerTrackPosition)/1000 < 500) {
+            timeStart.setText("0:" + musicDuration);
+        }else{
+            timeStart.setText("0:00");
+        }
+        if ((mPlayerTrackDuration)/1000 < 999) {
+            timeEnd.setText("0:" + maxDuration);
+        }else{
+            timeEnd.setText("0:00");
+        }
+        //Log.e("mPlayerTrackDuration", String.valueOf(musicDuration));
+
         if (MediaPlayerService.getInstance().isPlaying()) {
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
         } else {
