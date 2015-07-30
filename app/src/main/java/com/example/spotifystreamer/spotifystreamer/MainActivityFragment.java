@@ -164,7 +164,7 @@ public class MainActivityFragment extends Fragment {
                     Toast.makeText(getActivity(), "No artist found, please search again.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(getActivity(), "Please Type The Artist's Name!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Please Type The Artist's Name or check your network connection!", Toast.LENGTH_SHORT).show();
             }
         }
     }
