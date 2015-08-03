@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,14 +139,8 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // The only reason you might override this method when using onCreateView() is
-        // to modify any dialog characteristics. For example, the dialog includes a
-        // title by default, but your custom layout might not need it. So here you can
-        // remove the dialog title, but you must call the superclass to get the Dialog.
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-
         return dialog;
     }
 
@@ -201,7 +194,6 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.i(LOG_TAG, "Progress " + progress);
                 if (fromUser) {
                     MediaPlayerService.getInstance().seekMusicTo(300 * progress);
                 }
@@ -209,12 +201,10 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
 
@@ -238,8 +228,6 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
         super.onSaveInstanceState(savedInstanceState);
         // Save the searched artist in case of a screen rotation for example.
         savedInstanceState.putParcelable(TRACK_INFO_KEY, trackToPlay);
-
-
     }
 
     public void onNext(ParcelableArray mArtistSelected) {

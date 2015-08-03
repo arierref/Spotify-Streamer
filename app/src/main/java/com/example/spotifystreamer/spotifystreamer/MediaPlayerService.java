@@ -114,8 +114,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
 
     private void DisplayLoggingInfo() {
-        Log.d(LOG_TAG, "DisplayLoggingInfo " + getCurrentPosition());
-
         intent.putExtra("mPlayerTrackPosition", getCurrentPosition());
         intent.putExtra("mPlayerTrackDuration", getMusicDuration());
         sendBroadcast(intent);
@@ -278,11 +276,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         // your application to the Home screen.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);
 
         Notification notification = mBuilder.build();
@@ -290,23 +284,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
             notification.bigContentView = getExpandedView( true, notification );
 
-
-
-
-
         NotificationManager mNotificationManager =
                 (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
         // NOTIFICATION_ID allows you to update the notification later on.
         mNotificationManager.notify(NOTIFICATION_ID, notification);
 
-
     }
 
-    /**
-     * Configures service as a foreground service. A foreground service is a service that's doing something the user is
-     * actively aware of (such as playing music), and must appear to the user as a notification. That's why we create
-     * the notification here.
-     */
+    /*
     void setUpAsForeground(String text) {
         PendingIntent pi =
                 PendingIntent.getActivity(getApplicationContext(), 0, new Intent(getApplicationContext(), MainActivity.class),
@@ -317,20 +302,20 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mNotification.flags |= Notification.FLAG_ONGOING_EVENT;
         mNotification.setLatestEventInfo(getApplicationContext(), getResources().getString(R.string.app_name), text, pi);
         startForeground(NOTIFICATION_ID, mNotification);
-    }
+    }*/
 
     private RemoteViews getExpandedView( boolean isPlaying, Notification notification ) {
-        RemoteViews customView = new RemoteViews( getPackageName(), R.layout.view_notification );
 
+        RemoteViews customView = new RemoteViews( getPackageName(), R.layout.view_notification );
         Picasso.with(getApplicationContext()).load(mSongPicUrl).into(customView, R.id.large_icon, NOTIFICATION_ID, notification);
 
+        if( isPlaying ) {
+            customView.setImageViewResource(R.id.ib_play_pause, android.R.drawable.ic_media_pause);
+        }else {
+            customView.setImageViewResource(R.id.ib_play_pause, android.R.drawable.ic_media_play);
+        }
+
         customView.setImageViewResource( R.id.ib_rewind, android.R.drawable.ic_media_previous );
-
-        if( isPlaying )
-            customView.setImageViewResource( R.id.ib_play_pause, android.R.drawable.ic_media_pause );
-        else
-            customView.setImageViewResource( R.id.ib_play_pause, android.R.drawable.ic_media_play );
-
         customView.setImageViewResource( R.id.ib_fast_forward, android.R.drawable.ic_media_next );
 
         Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
