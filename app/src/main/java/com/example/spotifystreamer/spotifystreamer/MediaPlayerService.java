@@ -8,25 +8,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 
-    private static final String ACTION_PLAY = "PLAY";
-    private static final String ACTION_NEXT = "NEXT";
-    private static final String ACTION_PREVIOUS = "PREVIOUS";
+    //private static final String ACTION_PLAY = "PLAY";
+    //private static final String ACTION_NEXT = "NEXT";
+    //private static final String ACTION_PREVIOUS = "PREVIOUS";
 
 
     private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
@@ -70,7 +66,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         intent = new Intent(BROADCAST_ACTION);
     }
 
-    private void handleIntent( Intent intent ) {
+    /*private void handleIntent( Intent intent ) {
         if( intent != null && intent.getAction() != null ) {
             if( intent.getAction().equalsIgnoreCase( ACTION_PLAY ) ) {
                 updateNotification("handle intent");
@@ -78,7 +74,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             } else if( intent.getAction().equalsIgnoreCase( ACTION_NEXT ) ) {
             }
         }
-    }
+    }*/
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -87,7 +83,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(ACTION_PLAY)) {
+        //if (intent.getAction().equals(ACTION_PLAY)) {
             if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer(); // initialize it here
                 mMediaPlayer.setOnPreparedListener(this);
@@ -97,7 +93,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 initMediaPlayer();
             }
 
-        }
+        //}
         handler.removeCallbacks(sendUpdatesToUI);
         handler.post(sendUpdatesToUI);
 
@@ -258,31 +254,20 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      * Updates the notification.
      */
     void updateNotification(String text) {
-        // Notify NotificationManager of new intent
-        // NotificationCompatBuilder is a very convenient way to build backward-compatible
-        // notifications.  Just throw in some data.
         android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Spotify Streamer")
                 .setContentText(text);
 
-        // Make something interesting happen when the user clicks on the notification.
-        // In this case, opening the app is sufficient.
-        Intent resultIntent = new Intent(this, MediaPlayerService.class);
+        Intent serviceIntent = new Intent(this, MediaPlayerService.class);
 
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addNextIntent(resultIntent);
+        stackBuilder.addNextIntent(serviceIntent);
+
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);
 
         Notification notification = mBuilder.build();
-
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
-            notification.bigContentView = getExpandedView( true, notification );
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -302,7 +287,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mNotification.flags |= Notification.FLAG_ONGOING_EVENT;
         mNotification.setLatestEventInfo(getApplicationContext(), getResources().getString(R.string.app_name), text, pi);
         startForeground(NOTIFICATION_ID, mNotification);
-    }*/
+    }
 
     private RemoteViews getExpandedView( boolean isPlaying, Notification notification ) {
 
@@ -333,5 +318,5 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         customView.setOnClickPendingIntent(R.id.ib_rewind, pendingIntent);
 
         return customView;
-    }
+    }*/
 }

@@ -157,11 +157,19 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
         nextButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
 
+        Intent serviceIntent = new Intent(getActivity(), MediaPlayerService.class);
 
         if (savedInstanceState == null) {
             trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
+            MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
+            //In case we have a song already playing.
+            getActivity().stopService(new Intent(getActivity(), MediaPlayerService.class));
         } else {
             trackToPlay = savedInstanceState.getParcelable(TRACK_INFO_KEY);
+            MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
+            //trackProgress = savedInstanceState.getInt("Progress");
+            //scrubBar.setProgress(trackProgress);
+
         }
 
         if (!trackToPlay.imageUrl.isEmpty()) {
@@ -180,16 +188,16 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
             trackName.setText(trackToPlay.mTrack);
         }
 
-        //if (MediaPlayerService.getInstance().isPlaying()) {
-            //MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-        //}
-
         playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
         previousButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_previous, 0, 0, 0);
         nextButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_next, 0, 0, 0);
 
-        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
-        getActivity().startService(new Intent("PLAY"));
+        //explicitly starting the mediaplayer service
+        getActivity().startService(serviceIntent);
+
+        //MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
+        //startService(new Intent(getActivity(), MediaPlayerService.class));
+        //getActivity().startService(new Intent("PLAY"));
 
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -254,7 +262,9 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
 
         MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
-        getActivity().startService(new Intent("PLAY"));
+        //getActivity().startService(new Intent("PLAY"));
+        Intent serviceIntent = new Intent(getActivity(), MediaPlayerService.class);
+        getActivity().startService(serviceIntent);
 
     }
 
@@ -282,7 +292,9 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
 
         MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mTrack, trackToPlay.imageUrl);
-        getActivity().startService(new Intent("PLAY"));
+        //getActivity().startService(new Intent("PLAY"));
+        Intent serviceIntent = new Intent(getActivity(), MediaPlayerService.class);
+        getActivity().startService(serviceIntent);
 
     }
 
@@ -307,4 +319,5 @@ public class NowPlayingActivityFragment extends DialogFragment implements View.O
                 break;
         }
     }
+
 }
